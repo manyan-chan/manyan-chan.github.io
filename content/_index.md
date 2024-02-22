@@ -214,9 +214,8 @@ sections:
         country_code: HK
       # Choose a map provider in `params.yaml` to show a map from these coordinates
       coordinates:
-        latitude: '22.282721'
-        longitude: '114.212303'  
-
+        latitude: '22.28813425531544'
+        longitude: '114.20972167524727'   
       # Automatically link email and phone or display as text?
       autolink: true
       # Email form provider
