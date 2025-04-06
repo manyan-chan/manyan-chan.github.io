@@ -723,7 +723,8 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h3>
 
-                    <form id="contact-form" class="space-y-4">
+                    <!-- **** MODIFIED FORM TAG **** -->
+                    <form id="contact-form" action="https://formspree.io/f/xzzekblv" method="POST" class="space-y-4">
                         <div>
                             <label for="name"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
@@ -735,17 +736,17 @@
                         <div>
                             <label for="email"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                            <input type="email" id="email" name="email"
-                                class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                required>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md
+                            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white
+                            dark:bg-gray-700 text-gray-900 dark:text-white" required>
                         </div>
 
                         <div>
                             <label for="subject"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
-                            <input type="text" id="subject" name="subject"
-                                class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                required>
+                            <input type="text" id="subject" name="subject" class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md
+                            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white
+                            dark:bg-gray-700 text-gray-900 dark:text-white" required>
                         </div>
 
                         <div>
@@ -755,6 +756,9 @@
                                 class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 required></textarea>
                         </div>
+
+                        <!-- Optional: Add hidden fields for Formspree if needed, like a custom subject -->
+                        <!-- <input type="hidden" name="_subject" value="New submission from Portfolio!"> -->
 
                         <button type="submit"
                             class="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300">
@@ -864,37 +868,81 @@
             });
         });
 
-        // Contact form submission
+        // Contact form submission (AJAX with Fetch)
         const contactForm = document.getElementById('contact-form');
         const formMessage = document.getElementById('form-message');
 
         contactForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default browser submission
 
-            // Collect form data
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value
-            };
+            const formData = new FormData(contactForm);
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
 
-            // Display success message (in a real app, this would send the data to a server)
-            formMessage.innerHTML = `
-                <div class="py-3 px-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-md">
-                    <p>Thank you for your message, ${formData.name}!</p>
-                    <p class="text-sm mt-1">I'll get back to you as soon as possible.</p>
-                </div>
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending...
             `;
-            formMessage.classList.remove('hidden');
+            formMessage.classList.add('hidden'); // Hide previous messages
 
-            // Reset form
-            contactForm.reset();
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json' // Important for Formspree AJAX
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Success
+                        formMessage.innerHTML = `
+                        <div class="py-3 px-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-md">
+                            <p>Thank you for your message!</p>
+                            <p class="text-sm mt-1">I'll get back to you as soon as possible.</p>
+                        </div>
+                    `;
+                        formMessage.classList.remove('hidden');
+                        contactForm.reset(); // Clear the form
+                    } else {
+                        // Server returned an error (e.g., Formspree validation error)
+                        response.json().then(data => {
+                            let errorMsg = "Oops! There was a problem submitting your form.";
+                            if (data && data.errors) {
+                                // Extract Formspree specific errors
+                                errorMsg += "<br>" + data.errors.map(error => error.message).join("<br>");
+                            }
+                            formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">${errorMsg}</div>`;
+                            formMessage.classList.remove('hidden');
+                        }).catch(() => {
+                            // Fallback error if parsing JSON fails
+                            formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">Oops! There was a problem submitting your form. Server returned an error.</div>`;
+                            formMessage.classList.remove('hidden');
+                        });
+                    }
+                })
+                .catch(error => {
+                    // Network error or other fetch issue
+                    console.error('Form submission error:', error);
+                    formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">Network error: Could not submit the form. Please check your connection and try again.</div>`;
+                    formMessage.classList.remove('hidden');
+                })
+                .finally(() => {
+                    // Re-enable button and restore text
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
 
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                formMessage.classList.add('hidden');
-            }, 5000);
+                    // Optionally hide the success/error message after a delay
+                    setTimeout(() => {
+                        if (!formMessage.querySelector('.bg-red-100')) { // Only auto-hide success messages
+                            formMessage.classList.add('hidden');
+                        }
+                    }, 7000); // Hide after 7 seconds
+                });
         });
 
         // Scroll to top button
