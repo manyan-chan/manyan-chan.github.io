@@ -5,11 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Man Yan Chan | Software Engineer</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link to Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Initial Dark Mode Check (Runs early) -->
+    <script>
+        // Apply dark mode based on preference before full page load to prevent FOUC
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        // Add listener for OS theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (!('theme' in localStorage)) { // Only apply if user hasn't manually toggled
+                if (event.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                // Update toggle icons if visible/needed immediately
+                const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+                const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+                const mobileThemeText = document.getElementById('mobile-theme-text');
+                if (themeToggleDarkIcon && themeToggleLightIcon && mobileThemeText) {
+                    if (document.documentElement.classList.contains('dark')) {
+                        themeToggleDarkIcon.classList.add('hidden');
+                        themeToggleLightIcon.classList.remove('hidden');
+                        mobileThemeText.textContent = 'Switch to Light Mode';
+                    } else {
+                        themeToggleDarkIcon.classList.remove('hidden');
+                        themeToggleLightIcon.classList.add('hidden');
+                        mobileThemeText.textContent = 'Switch to Dark Mode';
+                    }
+                }
+            }
+        });
+    </script>
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
+            darkMode: 'class', // Enable class-based dark mode
             theme: {
                 extend: {
                     colors: {
@@ -44,76 +83,14 @@
             }
         }
     </script>
-    <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(93, 92, 222, 0.5);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(93, 92, 222, 0.8);
-        }
-
-        /* Timeline style */
-        .timeline-container::before {
-            content: '';
-            position: absolute;
-            width: 2px;
-            height: 100%;
-            background-color: rgba(93, 92, 222, 0.5);
-            left: 20px;
-            top: 0;
-        }
-
-        .timeline-circle {
-            position: absolute;
-            left: 16px;
-            transform: translateX(-50%);
-        }
-
-        /* Smooth transitions for dark mode */
-        * {
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        @media (min-width: 768px) {
-            .timeline-container::before {
-                left: 50%;
-            }
-
-            .timeline-circle {
-                left: 50%;
-            }
-        }
-    </style>
 </head>
 
+<!-- Apply base background/text colors -->
+
 <body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text">
-    <!-- Dark mode script -->
-    <script>
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (event.matches) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        });
-    </script>
 
     <!-- Navigation Bar -->
-    <nav class="fixed w-full bg-white dark:bg-dark-bg z-50 shadow-md transition-all duration-300">
+    <nav class="fixed w-full bg-white dark:bg-dark-bg z-50 shadow-md transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex-shrink-0 flex items-center">
@@ -123,11 +100,18 @@
                 <!-- Mobile menu button -->
                 <div class="flex items-center md:hidden">
                     <button id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-primary hover:dark:text-primary">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-primary hover:dark:text-primary"
+                        aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6 block" id="menu-closed-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="h-6 w-6 hidden" id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -144,16 +128,21 @@
                         class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">Skills</a>
                     <a href="#education"
                         class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">Education</a>
+                    <a href="#certificates"
+                        class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">Certificates</a>
+                    <!-- Added Certificates Link -->
                     <a href="#contact"
                         class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">Contact</a>
 
                     <!-- Dark mode toggle -->
-                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                        <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden text-gray-500 dark:text-gray-400"
+                    <button id="theme-toggle" aria-label="Toggle dark mode"
+                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <svg id="theme-toggle-dark-icon" class="w-5 h-5 text-gray-500 dark:text-gray-400"
                             fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                         </svg>
-                        <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden text-gray-500 dark:text-gray-400"
+                        <svg id="theme-toggle-light-icon" class="w-5 h-5 text-gray-500 dark:text-gray-400 hidden" <!--
+                            Initially hidden -->
                             fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
@@ -177,9 +166,12 @@
                     class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary">Skills</a>
                 <a href="#education"
                     class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary">Education</a>
+                <a href="#certificates"
+                    class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary">Certificates</a>
+                <!-- Added Certificates Link -->
                 <a href="#contact"
                     class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary">Contact</a>
-                <button id="mobile-theme-toggle"
+                <button id="mobile-theme-toggle" aria-label="Toggle dark mode mobile"
                     class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary">
                     <span id="mobile-theme-text">Toggle Dark Mode</span>
                 </button>
@@ -205,21 +197,34 @@
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <a href="#contact"
-                            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300">
+                            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300">
                             Contact Me
                         </a>
                         <a href="#experience"
-                            class="inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-700 text-base font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300">
+                            class="inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-700 text-base font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300">
                             View Experience
                         </a>
                     </div>
                 </div>
                 <div class="md:w-1/2 mt-10 md:mt-0 flex justify-center animate-fade-in">
+                    <!-- Pulsing container -->
                     <div
-                        class="relative w-64 h-64 md:w-80 md:h-80 rounded-full bg-primary/10 flex items-center justify-center">
+                        class="relative w-64 h-64 md:w-80 md:h-80 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                         <div class="absolute inset-0 rounded-full border-2 border-primary/30 animate-pulse"></div>
-                        <div class="text-7xl text-primary opacity-90">
-                            <i class="fas fa-code"></i>
+
+                        <!-- Container for Avatar OR Fallback Icon -->
+                        <div id="hero-visual-container" class="flex items-center justify-center">
+                            <!-- Attempt to load Avatar -->
+                            <img id="hero-avatar" src="avatar.jpeg" alt="Man Yan Chan Avatar"
+                                class="w-full h-full object-cover rounded-full shadow-lg transition-opacity duration-300 ease-in-out"
+                                style="opacity: 0;">
+
+                            <!-- Fallback Icon (Initially hidden, display managed by onerror) -->
+                            <div id="hero-fallback-icon"
+                                class="text-7xl text-primary opacity-90 items-center justify-center"
+                                style="display: none;">
+                                <i class="fas fa-code"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -236,14 +241,15 @@
             </div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 animate-slide-up">
+                <!-- Updated paragraph from resume -->
                 <p class="text-lg mb-6 leading-relaxed">
                     Results-driven software engineer with 3+ years of experience in optimizing business processes and
-                    developing scalable software
-                    solutions in the financial sector. Proven track record of delivering high-quality code that enhances
-                    operational performance.
-                    Strong understanding of financial markets and diverse asset classes, with a focus on driving
-                    innovation and collaboration in
-                    fast-paced environments.
+                    developing
+                    scalable software solutions in the financial sector. Proven track record of delivering high-quality
+                    code that enhances
+                    operational performance. Strong understanding of financial markets and diverse asset classes, with a
+                    focus on
+                    driving innovation and collaboration in fast-paced environments.
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -252,9 +258,10 @@
                             <i class="fas fa-laptop-code mr-3 text-primary"></i> Technical Expertise
                         </h3>
                         <p class="text-gray-700 dark:text-gray-300">
-                            Proficient in Python and various frameworks for web development and data analysis.
-                            Experienced in developing and maintaining
-                            financial systems, ETL workflows, and algorithmic trading solutions.
+                            Proficient in Python and various frameworks (FastAPI, Dash) for web development and data
+                            analysis.
+                            Experienced in developing and maintaining financial systems, ETL workflows, FIX protocol
+                            interfaces, and algorithmic trading solutions.
                         </p>
                     </div>
 
@@ -264,22 +271,23 @@
                         </h3>
                         <p class="text-gray-700 dark:text-gray-300">
                             Strong understanding of financial markets, derivatives, equities, and FICC. Combined
-                            technical skills with financial knowledge
+                            technical skills with financial knowledge (MSc FinEng coursework)
                             to develop targeted solutions for complex industry challenges.
                         </p>
                     </div>
                 </div>
 
+                <!-- Updated Links from Resume -->
                 <div class="mt-8 flex justify-center space-x-6">
-                    <a href="https://github.com/manyan-chan" target="_blank"
+                    <a href="https://github.com/manyan-chan" target="_blank" aria-label="GitHub Profile"
                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                         <i class="fab fa-github text-2xl"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/richard-chanmy/" target="_blank"
+                    <a href="https://www.linkedin.com/in/richard-chanmy" target="_blank" aria-label="LinkedIn Profile"
                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                         <i class="fab fa-linkedin text-2xl"></i>
                     </a>
-                    <a href="https://manyan-chan.github.io/" target="_blank"
+                    <a href="https://manyan-chan.github.io" target="_blank" aria-label="Personal Website"
                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                         <i class="fas fa-globe text-2xl"></i>
                     </a>
@@ -307,26 +315,30 @@
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg md:ml-auto md:mr-8">
                             <h3 class="text-xl font-bold text-gray-900 dark:text-white">Software Engineer</h3>
                             <h4 class="text-primary font-medium mt-1">Barclays - Equities Derivatives FO IT</h4>
-                            <div class="text-gray-600 dark:text-gray-400 mt-2">June 2024 - Present</div>
-                            <ul class="mt-4 space-y-2 text-gray-700 dark:text-gray-300">
+                            <div class="text-gray-600 dark:text-gray-400 mt-2">06/2024 - Present</div>
+                            <!-- Updated bullet points from resume -->
+                            <ul class="mt-4 space-y-2 text-gray-700 dark:text-gray-300 text-left">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Collaborated with cross-functional teams to expand and optimize electronic
-                                        trading of structured products to meet client needs</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Collaborated with cross-functional teams, including sales and trading desks,
+                                        to expand and optimize electronic trading of structured products to meet client
+                                        needs.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
                                     <span>Developed and maintained FIX protocol interfaces in Python for electronic
-                                        trading</span>
+                                        trading, facilitating seamless communication between Barclays and buy-side
+                                        institutes.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Implemented automated systems for quote pricing and order execution</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Implemented automated systems for quote pricing and order execution,
+                                        streamlining the sales process and improving competitiveness amongst sell-side
+                                        firms.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
-
                     <div class="md:w-1/2 hidden md:block"></div>
                 </div>
 
@@ -335,29 +347,30 @@
                     <div class="timeline-circle w-8 h-8 bg-primary rounded-full flex items-center justify-center z-10">
                         <i class="fas fa-briefcase text-white text-sm"></i>
                     </div>
-
                     <div class="md:w-1/2 hidden md:block"></div>
-
                     <div class="md:w-1/2 md:pl-8">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg md:ml-8">
                             <h3 class="text-xl font-bold text-gray-900 dark:text-white">Development Specialist</h3>
                             <h4 class="text-primary font-medium mt-1">HSBC - Market Treasury IT, Global Banking &
                                 Markets</h4>
-                            <div class="text-gray-600 dark:text-gray-400 mt-2">July 2022 - February 2024</div>
+                            <div class="text-gray-600 dark:text-gray-400 mt-2">07/2022 - 02/2024</div>
+                            <!-- Updated bullet points from resume -->
                             <ul class="mt-4 space-y-2 text-gray-700 dark:text-gray-300">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
                                     <span>Created optimized ETL workflows using Python Pandas and NumPy, reducing data
-                                        processing time</span>
+                                        processing time, enabling front-office users to monitor Banking Book NPV of NII
+                                        more effectively.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Developed comprehensive test strategies and plans for SIT and UAT</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Developed comprehensive test strategies and plans for SIT and UAT, ensuring
+                                        high test coverage and application uptime.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
                                     <span>Leveraged Python Dash and Matplotlib to create graphical and interactive web
-                                        applications</span>
+                                        applications, optimizing performance for seamless user experiences.</span>
                                 </li>
                             </ul>
                         </div>
@@ -369,30 +382,40 @@
                     <div class="timeline-circle w-8 h-8 bg-primary rounded-full flex items-center justify-center z-10">
                         <i class="fas fa-briefcase text-white text-sm"></i>
                     </div>
-
                     <div class="md:w-1/2 md:pr-8 md:text-right">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg md:ml-auto md:mr-8">
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Quant Developer</h3>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Quant Developer (Part-time)</h3>
                             <h4 class="text-primary font-medium mt-1">NineBarrack</h4>
-                            <div class="text-gray-600 dark:text-gray-400 mt-2">January 2022 - May 2022 (Part-time)</div>
-                            <ul class="mt-4 space-y-2 text-gray-700 dark:text-gray-300">
+                            <div class="text-gray-600 dark:text-gray-400 mt-2">01/2022 - 05/2022</div>
+                            <!-- Updated bullet points from resume -->
+                            <ul class="mt-4 space-y-2 text-gray-700 dark:text-gray-300 text-left">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Developed backtesting frameworks for trading strategies using Python
-                                        libraries</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Developed and executed comprehensive backtesting frameworks for trading
+                                        strategies utilizing Python libraries, including Pandas and NumPy, to validate
+                                        performance and enhance decision-making.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Designed interactive web dashboard using Flask, ReactJS, and SocketIO</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Designed and maintained an interactive web dashboard for the company,
+                                        leveraging technologies such as Flask, ReactJS, and SocketIO to provide
+                                        real-time insights.</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                                    <span>Managed Amazon EC2 instances and developed an algorithmic trading bot</span>
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Managed and optimized Amazon EC2 instances to ensure high availability and
+                                        performance, implementing best practices for system reliability and
+                                        efficiency.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                    <span>Transformed complex trading logic into a robust algorithmic trading bot using
+                                        Python, streamlining execution processes and enhancing trading
+                                        efficiency.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
-
                     <div class="md:w-1/2 hidden md:block"></div>
                 </div>
             </div>
@@ -408,42 +431,39 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-slide-up">
-                <!-- Programming & Development -->
+                <!-- Programming & Web Dev -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <div class="flex items-center mb-5">
                         <div class="bg-primary/10 p-3 rounded-full mr-4">
                             <i class="fas fa-code text-xl text-primary"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Programming</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Programming & Web Dev</h3>
                     </div>
-
                     <div class="space-y-4">
-                        <div>
+                        <div> <!-- Python -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Python</span>
-                                <span class="text-primary text-sm">Expert</span>
+                                <span class="text-primary text-sm font-semibold">Expert</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- FastAPI -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">FastAPI</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- Dash -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Dash</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
                             </div>
                         </div>
@@ -456,79 +476,75 @@
                         <div class="bg-primary/10 p-3 rounded-full mr-4">
                             <i class="fas fa-chart-bar text-xl text-primary"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Data Analysis</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Data Analysis (Python)</h3>
                     </div>
-
                     <div class="space-y-4">
-                        <div>
+                        <div> <!-- Pandas -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Pandas</span>
-                                <span class="text-primary text-sm">Expert</span>
+                                <span class="text-primary text-sm font-semibold">Expert</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- NumPy -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">NumPy</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- Matplotlib -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Matplotlib</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- DevOps & Other -->
+                <!-- DevOps & Product Knowledge -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <div class="flex items-center mb-5">
                         <div class="bg-primary/10 p-3 rounded-full mr-4">
                             <i class="fas fa-server text-xl text-primary"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">DevOps & Domain</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">DevOps & Product Knowledge</h3>
                     </div>
-
                     <div class="space-y-4">
-                        <div>
+                        <div> <!-- Git -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Git</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- CI/CD -->
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-gray-700 dark:text-gray-300 font-medium">CI/CD (TeamCity,
                                     Jenkins)</span>
-                                <span class="text-primary text-sm">Intermediate</span>
+                                <span class="text-primary text-sm font-semibold">Intermediate</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
                             </div>
                         </div>
-
-                        <div>
+                        <div> <!-- Product Knowledge -->
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-gray-700 dark:text-gray-300 font-medium">Financial Products</span>
-                                <span class="text-primary text-sm">Advanced</span>
+                                <span class="text-gray-700 dark:text-gray-300 font-medium">Product Knowledge</span>
+                                <span class="text-primary text-sm font-semibold">Advanced</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Equities, FICC, Derivatives</p>
+                            <!-- Optional: Add a progress bar if desired, or leave as text -->
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2 overflow-hidden">
                                 <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
                             </div>
                         </div>
@@ -542,66 +558,81 @@
     <section id="education" class="py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Education & Certifications</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Education</h2> <!-- Simplified Title -->
                 <div class="mt-2 h-1 w-20 bg-primary mx-auto rounded-full"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Education -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-slide-up">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-primary/10 p-3 rounded-full mr-4">
-                            <i class="fas fa-graduation-cap text-xl text-primary"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Education</h3>
-                    </div>
-
-                    <div class="border-l-4 border-primary pl-4 py-2 mb-6">
-                        <h4 class="text-lg font-semibold text-gray-800 dark:text-white">The University of Hong Kong</h4>
-                        <p class="text-gray-600 dark:text-gray-400 mt-1">BBA (Information Systems and Computer Science
-                            Double Major)</p>
-                        <p class="text-gray-500 dark:text-gray-500 mt-1">Graduated: June 2022</p>
-                    </div>
-
-                    <div class="text-gray-700 dark:text-gray-300 space-y-3">
-                        <p class="flex items-start">
-                            <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                            <span>Completed diverse business courses including Accounting, Economics, Finance, and
-                                Statistics</span>
-                        </p>
-                        <p class="flex items-start">
-                            <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                            <span>Became proficient in programming languages including Python, SQL, and
-                                JavaScript</span>
-                        </p>
-                        <p class="flex items-start">
-                            <i class="fas fa-check-circle text-primary mt-1 mr-2"></i>
-                            <span>Participated in business case studies and simulations to develop real-world
-                                problem-solving skills</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Certifications and Languages -->
+                <!-- Education Column -->
                 <div class="space-y-8 animate-slide-up">
-                    <!-- Certifications -->
+                    <!-- WorldQuant University -->
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-primary/10 p-3 rounded-full mr-4">
-                                <i class="fas fa-certificate text-xl text-primary"></i>
+                                <i class="fas fa-graduation-cap text-xl text-primary"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Certifications</h3>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">WorldQuant University</h3>
                         </div>
-
-                        <div class="border-l-4 border-primary pl-4 py-2">
-                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white">CFA Institute Investment
-                                Foundations® Certificate</h4>
-                            <p class="text-gray-600 dark:text-gray-400 mt-1">Foundational understanding of investment
-                                industry</p>
+                        <div class="border-l-4 border-primary pl-4 py-2 mb-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Master of Science in
+                                Financial Engineering</h4>
+                            <p class="text-gray-500 dark:text-gray-500 mt-1">Expected: 04/2025 - 04/2027</p>
+                        </div>
+                        <!-- Updated bullet points from resume -->
+                        <div class="text-gray-700 dark:text-gray-300 space-y-3">
+                            <p class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                <span>Currently pursuing an MSc with a focus on quantitative modeling, data science,
+                                    machine learning, financial theory, and applied statistics.</span>
+                            </p>
+                            <p class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                <span>Gaining practical skills in financial analytics, algorithmic trading, risk
+                                    management, and portfolio optimization through hands-on projects and
+                                    industry-focused coursework.</span>
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Languages -->
+                    <!-- The University of Hong Kong -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-primary/10 p-3 rounded-full mr-4">
+                                <i class="fas fa-graduation-cap text-xl text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">The University of Hong Kong</h3>
+                        </div>
+                        <div class="border-l-4 border-primary pl-4 py-2 mb-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Bachelor of Business
+                                Administration in Information Systems and Computer Science</h4>
+                            <p class="text-gray-500 dark:text-gray-500 mt-1">Graduated: 06/2022</p>
+                        </div>
+                        <!-- Updated bullet points from resume -->
+                        <div class="text-gray-700 dark:text-gray-300 space-y-3">
+                            <p class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                <span>Completed a diverse range of business courses, including Accounting, Economics,
+                                    Finance, and Statistics, providing a strong foundation in core business
+                                    principles.</span>
+                            </p>
+                            <p class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                <span>Studied and became proficient in a variety of programming languages, such as
+                                    Python, SQL, and JavaScript, enabling versatile problem-solving and application
+                                    development.</span>
+                            </p>
+                            <p class="flex items-start">
+                                <i class="fas fa-check-circle text-primary mt-1 mr-2 flex-shrink-0"></i>
+                                <span>Participated in various business case studies and simulations, developing a
+                                    comprehensive understanding of real-world business challenges, decision-making
+                                    processes, and strategies for success.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Languages Column -->
+                <div class="animate-slide-up"> <!-- Keep Languages in the second column -->
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-primary/10 p-3 rounded-full mr-4">
@@ -609,34 +640,31 @@
                             </div>
                             <h3 class="text-xl font-bold text-gray-900 dark:text-white">Languages</h3>
                         </div>
-
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">English</span>
-                                    <span class="text-primary text-sm">Professional</span>
+                                    <span class="text-primary text-sm font-semibold">Professional</span>
                                 </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                     <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
                                 </div>
                             </div>
-
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Cantonese</span>
-                                    <span class="text-primary text-sm">Native</span>
+                                    <span class="text-primary text-sm font-semibold">Native</span>
                                 </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                     <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
                                 </div>
                             </div>
-
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Putonghua</span>
-                                    <span class="text-primary text-sm">Professional</span>
+                                    <span class="text-primary text-sm font-semibold">Professional</span>
                                 </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                     <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                                 </div>
                             </div>
@@ -647,8 +675,58 @@
         </div>
     </section>
 
+    <!-- Certificates Section (NEW) -->
+    <section id="certificates" class="py-16 bg-light-card dark:bg-dark-card">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Certificates</h2>
+                <div class="mt-2 h-1 w-20 bg-primary mx-auto rounded-full"></div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 animate-slide-up">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>CFA Institute Investment Foundations® Certificate</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>Bloomberg Market Concepts</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>OpenEDG Python Institute: Programming with Python Professional Certificate</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>Anaconda Python for Data Science Professional Certificate</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>Data Engineering Foundations Professional Certificate by Astronomer</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>Ubuntu Linux Professional Certificate by Canonical</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>HackerRank Software Engineer Certificate</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>HackerRank Problem Solving (Intermediate) Certificate</span>
+                    </p>
+                    <p class="flex items-start">
+                        <i class="fas fa-certificate text-primary mt-1 mr-2 flex-shrink-0"></i>
+                        <span>Cisco Certificate in Ethical Hacking</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
-    <section id="contact" class="py-16 bg-light-card dark:bg-dark-card">
+    <section id="contact" class="py-16"> <!-- Removed background class to alternate -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Contact Me</h2>
@@ -659,10 +737,9 @@
                 <!-- Contact Info -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Get In Touch</h3>
-
                     <div class="space-y-6">
                         <div class="flex items-start">
-                            <div class="bg-primary/10 p-3 rounded-full mr-4">
+                            <div class="bg-primary/10 p-3 rounded-full mr-4 flex-shrink-0">
                                 <i class="fas fa-map-marker-alt text-primary"></i>
                             </div>
                             <div>
@@ -670,46 +747,48 @@
                                 <p class="text-gray-600 dark:text-gray-400 mt-1">Eastern District, Hong Kong</p>
                             </div>
                         </div>
-
                         <div class="flex items-start">
-                            <div class="bg-primary/10 p-3 rounded-full mr-4">
+                            <div class="bg-primary/10 p-3 rounded-full mr-4 flex-shrink-0">
                                 <i class="fas fa-envelope text-primary"></i>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Email</h4>
-                                <a href="mailto:manyanchanmanyan@gmail.com"
-                                    class="text-gray-600 dark:text-gray-400 mt-1 hover:text-primary dark:hover:text-primary transition-colors">manyanchanmanyan@gmail.com</a>
+                                <!-- Updated Email -->
+                                <a href="mailto:richard.mychan@gmail.com"
+                                    class="text-gray-600 dark:text-gray-400 mt-1 hover:text-primary dark:hover:text-primary transition-colors break-all">richard.mychan@gmail.com</a>
                             </div>
                         </div>
-
                         <div class="flex items-start">
-                            <div class="bg-primary/10 p-3 rounded-full mr-4">
+                            <div class="bg-primary/10 p-3 rounded-full mr-4 flex-shrink-0">
                                 <i class="fas fa-phone text-primary"></i>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Phone</h4>
-                                <a href="tel:+85298255829"
+                                <!-- Updated Phone -->
+                                <a href="tel:+85256924792"
                                     class="text-gray-600 dark:text-gray-400 mt-1 hover:text-primary dark:hover:text-primary transition-colors">+852
-                                    98255829</a>
+                                    56924792</a>
                             </div>
                         </div>
-
                         <div class="flex items-start">
-                            <div class="bg-primary/10 p-3 rounded-full mr-4">
+                            <div class="bg-primary/10 p-3 rounded-full mr-4 flex-shrink-0">
                                 <i class="fas fa-globe text-primary"></i>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Online Presence</h4>
                                 <div class="flex mt-2 space-x-4">
-                                    <a href="https://github.com/manyan-chan" target="_blank"
+                                    <!-- Updated Links -->
+                                    <a href="https://github.com/manyan-chan" target="_blank" aria-label="GitHub Profile"
                                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                                         <i class="fab fa-github text-xl"></i>
                                     </a>
-                                    <a href="https://www.linkedin.com/in/richard-chanmy/" target="_blank"
+                                    <a href="https://www.linkedin.com/in/richard-chanmy" target="_blank"
+                                        aria-label="LinkedIn Profile"
                                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                                         <i class="fab fa-linkedin text-xl"></i>
                                     </a>
-                                    <a href="https://manyan-chan.github.io/" target="_blank"
+                                    <a href="https://manyan-chan.github.io" target="_blank"
+                                        aria-label="Personal Website"
                                         class="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors duration-300">
                                         <i class="fas fa-globe text-xl"></i>
                                     </a>
@@ -722,51 +801,34 @@
                 <!-- Contact Form -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h3>
-
-                    <!-- **** MODIFIED FORM TAG **** -->
                     <form id="contact-form" action="https://formspree.io/f/xzzekblv" method="POST" class="space-y-4">
                         <div>
                             <label for="name"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-                            <input type="text" id="name" name="name"
-                                class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                required>
+                            <input type="text" id="name" name="name" autocomplete="name" class="form-input" required>
                         </div>
-
                         <div>
                             <label for="email"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md
-                            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white
-                            dark:bg-gray-700 text-gray-900 dark:text-white" required>
+                            <input type="email" id="email" name="email" autocomplete="email" class="form-input"
+                                required>
                         </div>
-
                         <div>
                             <label for="subject"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
-                            <input type="text" id="subject" name="subject" class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md
-                            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white
-                            dark:bg-gray-700 text-gray-900 dark:text-white" required>
+                            <input type="text" id="subject" name="subject" class="form-input" required>
                         </div>
-
                         <div>
                             <label for="message"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
-                            <textarea id="message" name="message" rows="4"
-                                class="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                required></textarea>
+                            <textarea id="message" name="message" rows="4" class="form-textarea" required></textarea>
                         </div>
-
-                        <!-- Optional: Add hidden fields for Formspree if needed, like a custom subject -->
-                        <!-- <input type="hidden" name="_subject" value="New submission from Portfolio!"> -->
-
                         <button type="submit"
-                            class="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300">
+                            class="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300 disabled:opacity-50">
                             Send Message
                         </button>
                     </form>
-
-                    <div id="form-message" class="mt-4 text-center hidden"></div>
+                    <div id="form-message" class="mt-4 text-center" aria-live="polite"></div>
                 </div>
             </div>
         </div>
@@ -780,221 +842,36 @@
                     <h3 class="text-2xl font-bold text-white">Man Yan Chan</h3>
                     <p class="text-gray-400 mt-1">Software Engineer</p>
                 </div>
-
                 <div class="flex justify-center md:justify-end space-x-6">
-                    <a href="https://github.com/manyan-chan" target="_blank"
+                    <!-- Updated Links -->
+                    <a href="https://github.com/manyan-chan" target="_blank" aria-label="GitHub Profile"
                         class="text-gray-400 hover:text-white transition-colors duration-300">
                         <i class="fab fa-github text-2xl"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/richard-chanmy/" target="_blank"
+                    <a href="https://www.linkedin.com/in/richard-chanmy" target="_blank" aria-label="LinkedIn Profile"
                         class="text-gray-400 hover:text-white transition-colors duration-300">
                         <i class="fab fa-linkedin text-2xl"></i>
                     </a>
-                    <a href="https://manyan-chan.github.io/" target="_blank"
+                    <a href="https://manyan-chan.github.io" target="_blank" aria-label="Personal Website"
                         class="text-gray-400 hover:text-white transition-colors duration-300">
                         <i class="fas fa-globe text-2xl"></i>
                     </a>
                 </div>
             </div>
-
             <div class="mt-8 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-                <p>&copy; 2024 Man Yan Chan. All rights reserved.</p>
+                <p>© <span id="current-year">2024</span> Man Yan Chan. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scroll To Top Button -->
-    <button id="scroll-to-top"
-        class="fixed bottom-8 right-8 p-3 rounded-full bg-primary text-white shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+    <button id="scroll-to-top" aria-label="Scroll to top"
+        class="fixed bottom-8 right-8 p-3 rounded-full bg-primary text-white shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary z-40">
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- JavaScript -->
-    <script>
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-        const mobileThemeText = document.getElementById('mobile-theme-text');
-
-        // Set initial theme toggle state
-        function setToggleIcons() {
-            if (document.documentElement.classList.contains('dark')) {
-                themeToggleDarkIcon.classList.add('hidden');
-                themeToggleLightIcon.classList.remove('hidden');
-                mobileThemeText.textContent = 'Switch to Light Mode';
-            } else {
-                themeToggleDarkIcon.classList.remove('hidden');
-                themeToggleLightIcon.classList.add('hidden');
-                mobileThemeText.textContent = 'Switch to Dark Mode';
-            }
-        }
-
-        setToggleIcons();
-
-        // Theme toggle click handler
-        const toggleTheme = () => {
-            document.documentElement.classList.toggle('dark');
-            setToggleIcons();
-        };
-
-        themeToggle.addEventListener('click', toggleTheme);
-        mobileThemeToggle.addEventListener('click', toggleTheme);
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                // Close mobile menu if it's open
-                mobileMenu.classList.add('hidden');
-
-                const targetId = this.getAttribute('href');
-                const targetSection = document.querySelector(targetId);
-
-                window.scrollTo({
-                    top: targetSection.offsetTop - 64, // Account for navbar height
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // Contact form submission (AJAX with Fetch)
-        const contactForm = document.getElementById('contact-form');
-        const formMessage = document.getElementById('form-message');
-
-        contactForm.addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent default browser submission
-
-            const formData = new FormData(contactForm);
-            const submitButton = contactForm.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.innerHTML;
-
-            // Disable button and show loading state
-            submitButton.disabled = true;
-            submitButton.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Sending...
-            `;
-            formMessage.classList.add('hidden'); // Hide previous messages
-
-            fetch(contactForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json' // Important for Formspree AJAX
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        // Success
-                        formMessage.innerHTML = `
-                        <div class="py-3 px-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-md">
-                            <p>Thank you for your message!</p>
-                            <p class="text-sm mt-1">I'll get back to you as soon as possible.</p>
-                        </div>
-                    `;
-                        formMessage.classList.remove('hidden');
-                        contactForm.reset(); // Clear the form
-                    } else {
-                        // Server returned an error (e.g., Formspree validation error)
-                        response.json().then(data => {
-                            let errorMsg = "Oops! There was a problem submitting your form.";
-                            if (data && data.errors) {
-                                // Extract Formspree specific errors
-                                errorMsg += "<br>" + data.errors.map(error => error.message).join("<br>");
-                            }
-                            formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">${errorMsg}</div>`;
-                            formMessage.classList.remove('hidden');
-                        }).catch(() => {
-                            // Fallback error if parsing JSON fails
-                            formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">Oops! There was a problem submitting your form. Server returned an error.</div>`;
-                            formMessage.classList.remove('hidden');
-                        });
-                    }
-                })
-                .catch(error => {
-                    // Network error or other fetch issue
-                    console.error('Form submission error:', error);
-                    formMessage.innerHTML = `<div class="py-3 px-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-md">Network error: Could not submit the form. Please check your connection and try again.</div>`;
-                    formMessage.classList.remove('hidden');
-                })
-                .finally(() => {
-                    // Re-enable button and restore text
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonText;
-
-                    // Optionally hide the success/error message after a delay
-                    setTimeout(() => {
-                        if (!formMessage.querySelector('.bg-red-100')) { // Only auto-hide success messages
-                            formMessage.classList.add('hidden');
-                        }
-                    }, 7000); // Hide after 7 seconds
-                });
-        });
-
-        // Scroll to top button
-        const scrollToTopButton = document.getElementById('scroll-to-top');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopButton.classList.remove('opacity-0', 'invisible');
-                scrollToTopButton.classList.add('opacity-100', 'visible');
-            } else {
-                scrollToTopButton.classList.remove('opacity-100', 'visible');
-                scrollToTopButton.classList.add('opacity-0', 'invisible');
-            }
-        });
-
-        scrollToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Add active class to nav links on scroll
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        function setActiveLink() {
-            let current = '';
-
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                const sectionHeight = section.clientHeight;
-
-                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-                    current = '#' + section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('text-primary');
-                link.classList.add('text-gray-700', 'dark:text-gray-300');
-
-                if (link.getAttribute('href') === current) {
-                    link.classList.remove('text-gray-700', 'dark:text-gray-300');
-                    link.classList.add('text-primary');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', setActiveLink);
-        window.addEventListener('load', setActiveLink);
-    </script>
+    <!-- Link to JavaScript File -->
+    <script src="script.js"></script>
 </body>
 
 </html>

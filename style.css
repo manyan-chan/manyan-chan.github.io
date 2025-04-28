@@ -1,0 +1,175 @@
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    /* Works better with dark/light mode */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(93, 92, 222, 0.5);
+    /* Primary color with transparency */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(93, 92, 222, 0.8);
+    /* Darker primary on hover */
+}
+
+/* Timeline style */
+.timeline-container {
+    position: relative;
+}
+
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background-color: rgba(93, 92, 222, 0.3);
+    /* Lighter line */
+    left: 1.125rem;
+    /* Align with center of 1.5rem (ml-10) / 2 + approx icon adjustment */
+    top: 0;
+    transform: translateX(-50%);
+}
+
+.timeline-circle {
+    position: absolute;
+    left: 1.125rem;
+    /* Match the line's left offset */
+    top: 0;
+    /* Adjust as needed or position via JS if dynamic */
+    transform: translateX(-50%);
+    z-index: 10;
+    /* Ensure circle is above the line */
+}
+
+/* Smooth transitions for dark mode and other properties */
+* {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Default state for animations (if needed outside Tailwind config) */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+    /* Use forwards to keep final state */
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+    /* Use forwards to keep final state */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+/* Medium screens and up for timeline */
+@media (min-width: 768px) {
+    .timeline-container::before {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .timeline-circle {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Ensure text-alignments work correctly on larger screens */
+    .md\:text-right .text-left {
+        text-align: left !important;
+        /* Override Tailwind if needed for list items */
+    }
+}
+
+
+/* Basic Form Input Styling (can be enhanced) */
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    /* Equivalent to px-4 py-3 */
+    font-size: 1rem;
+    /* text-base */
+    line-height: 1.5rem;
+    border-width: 1px;
+    border-radius: 0.375rem;
+    /* rounded-md */
+    background-color: theme('colors.white');
+    color: theme('colors.gray.900');
+    border-color: theme('colors.gray.300');
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-textarea {
+    min-height: 8rem;
+    /* rows="4" equivalent */
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: theme('colors.primary');
+    box-shadow: 0 0 0 2px theme('colors.primary' / 50%);
+    /* ring-2 ring-primary */
+}
+
+/* Dark mode form input styling */
+.dark .form-input,
+.dark .form-textarea {
+    background-color: theme('colors.gray.700');
+    color: theme('colors.white');
+    border-color: theme('colors.gray.700');
+    /* Match dark card border or slightly different */
+}
+
+.dark .form-input:focus,
+.dark .form-textarea:focus {
+    border-color: theme('colors.primary');
+    /* Keep focus color consistent */
+    box-shadow: 0 0 0 2px theme('colors.primary' / 50%);
+}
+
+
+/* Accessibility improvement: focus visible styles */
+:focus-visible {
+    outline: 2px solid theme('colors.primary');
+    outline-offset: 2px;
+}
+
+/* Hide sr-only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

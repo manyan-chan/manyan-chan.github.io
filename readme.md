@@ -4,7 +4,7 @@
 
 This repository contains the source code for my personal portfolio website, showcasing my skills, experience, and background as a Software Engineer specializing in the financial sector.
 
-**[View Live Demo](https://manyan-chan.github.io/)** <!-- Make sure this link is correct -->
+**[View Live Demo](https://manyan-chan.github.io/)**
 
 ---
 
